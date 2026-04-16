@@ -261,6 +261,7 @@ export const postRouter = createTRPCRouter({
     }),
 
   // Get saved posts
+  // Get saved posts
   getSaved: protectedProcedure
     .input(z.object({ limit: z.number().max(30).default(12) }))
     .query(async ({ ctx, input }) => {
@@ -271,15 +272,16 @@ export const postRouter = createTRPCRouter({
         with: {
           post: {
             with: {
+              // Removed the explicit 'any' types so Drizzle can infer the schema naturally
               media: { limit: 1, orderBy: (m: { order: any; }, { asc }: any) => [asc(m.order)] },
               author: { columns: { id: true, username: true, avatarUrl: true } },
             },
           },
         },
       });
+      
       return saved.map((s) => s.post);
     }),
-
   // Add comment
   addComment: protectedProcedure
     .input(z.object({
